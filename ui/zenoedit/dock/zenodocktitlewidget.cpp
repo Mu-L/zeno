@@ -502,6 +502,15 @@ QMenuBar* ZenoViewDockTitle::initMenu()
         pEnvText->addAction(pAction);
     }
 
+    QMenu* pAdd = new QMenu(tr("Add"));
+    {
+        QAction* pAction = new QAction(tr("LightArea"), this);
+        connect(pAction, &QAction::triggered, this, [=]() {
+            auto *scene = Zenovis::GetInstance().getSession()->get_scene();
+            scene->lightMan->addLightArea();
+        });
+        pAdd->addAction(pAction);
+    }
     QMenu* pCamera = new QMenu(tr("Camera"));
     {
 		QAction* pAction = new QAction(tr("Node Camera"), this);
@@ -522,6 +531,7 @@ QMenuBar* ZenoViewDockTitle::initMenu()
     pMenuBar->addMenu(pDisplay);
     pMenuBar->addMenu(pRecord);
     pMenuBar->addMenu(pEnvText);
+    pMenuBar->addMenu(pAdd);
     pMenuBar->addMenu(pCamera);
 
     return pMenuBar;

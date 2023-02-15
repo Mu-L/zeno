@@ -9,6 +9,7 @@
 #include <optional>
 #include <unordered_set>
 #include <unordered_map>
+#include "LightManager.h"
 
 namespace zenovis {
 
@@ -28,6 +29,7 @@ struct Scene : zeno::disable_copy {
     std::unique_ptr<DrawOptions> drawOptions;
     std::unique_ptr<ShaderManager> shaderMan;
     std::unique_ptr<ObjectsManager> objectsMan;
+    std::unique_ptr<LightManager> lightMan;
     std::unique_ptr<RenderManager> renderMan;
 
     Scene();

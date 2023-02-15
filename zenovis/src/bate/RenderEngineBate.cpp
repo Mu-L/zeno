@@ -39,6 +39,13 @@ struct RenderEngineBate : RenderEngine {
 
     void update() override {
         graphicsMan->load_objects(scene->objectsMan->pairsShared());
+        auto &man = scene->lightMan;
+        man->update_proxy_prims();
+        zeno::log_warn("{}", (int)man->items.size());
+        for (const auto & [k, v]: man->proxy_prims) {
+            zeno::log_warn("{}", k);
+            graphicsMan->load_realtime_object(k, v);
+        }
     }
 
     void draw() override {
