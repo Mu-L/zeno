@@ -1,4 +1,5 @@
 #include "transform.h"
+#include "zeno/utils/log.h"
 
 #include <zeno/funcs/PrimitiveTools.h>
 #include <zeno/types/UserData.h>
@@ -23,9 +24,17 @@ FakeTransformer::FakeTransformer()
       , m_handler_scale(1.f) {}
 
 void FakeTransformer::addObject(const std::string& name) {
+    zeno::log_error("{}", name);
     if (name.empty()) return;
     auto scene = Zenovis::GetInstance().getSession()->get_scene();
-    auto object = dynamic_cast<PrimitiveObject*>(scene->objectsMan->get(name).value());
+//    auto object = dynamic_cast<PrimitiveObject*>(scene->objectsMan->get(name).value());
+    PrimitiveObject* object;
+    if (scene->objectsMan->get(name).has_value()) {
+        object = dynamic_cast<PrimitiveObject*>(scene->objectsMan->get(name).value());
+    }
+    else if (scene->lightMan->proxy_prims.count(name)) {
+        object = scene->lightMan->proxy_prims[name].get();
+    }
     m_objects_center *= m_objects.size();
     auto& user_data = object->userData();
     zeno::vec3f bmin, bmax;

@@ -293,8 +293,12 @@ struct FrameBufferPicker : IPicker {
             }
             if (focus_prim) prims.emplace_back(focus_prim_name, focus_prim);
         }
-        else
+        else {
             prims = std::move(prims_shared);
+            for (const auto& [prim_name, prim] : scene->lightMan->proxy_prims) {
+                prims.emplace_back(std::make_pair(prim_name, prim));
+            }
+        }
 
         // shading primitive objects
         for (unsigned int id = 0; id < prims.size(); id++) {

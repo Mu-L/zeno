@@ -88,6 +88,9 @@ struct PrimitiveHighlight : IGraphicDraw {
                         }
                     }
                 }
+                if (prim == nullptr && scene->lightMan->proxy_prims.count(prim_id)) {
+                    prim = scene->lightMan->proxy_prims[prim_id].get();
+                }
                 // ----- draw selected particles -----
                 if (prim->tris->empty()) {
                     // prepare data
