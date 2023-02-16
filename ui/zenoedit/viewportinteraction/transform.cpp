@@ -352,8 +352,12 @@ void FakeTransformer::syncToTransformNode(NodeLocation& node_location,
 
 void FakeTransformer::endTransform(bool moved) {
     if (moved) {
+        auto scene = Zenovis::GetInstance().getSession()->get_scene();
         // write transform info to objects' user data
         for (auto &[obj_name, obj] : m_objects) {
+            if (scene->lightMan->has(obj_name)) {
+                continue;
+            }
             auto& user_data = obj->userData();
 
             if (m_operation == TRANSLATE) {
@@ -381,6 +385,9 @@ void FakeTransformer::endTransform(bool moved) {
 
         // sync to node system
         for (auto &[obj_name, obj] : m_objects) {
+            if (scene->lightMan->has(obj_name)) {
+                continue;
+            }
             auto& node_sync = NodeSyncMgr::GetInstance();
             auto prim_node_location = node_sync.searchNodeOfPrim(obj_name);
             auto& prim_node = prim_node_location->node;
@@ -596,6 +603,7 @@ void FakeTransformer::rotate(glm::vec3 start_vec, glm::vec3 end_vec, glm::vec3 a
 }
 
 void FakeTransformer::doTransform() {
+    auto scene = Zenovis::GetInstance().getSession()->get_scene();
     // qDebug() << "transformer's objects count " << m_objects.size();
     glm::vec3 new_objects_center = {0, 0, 0};
     for (auto &[obj_name, obj] : m_objects) {
@@ -605,6 +613,17 @@ void FakeTransformer::doTransform() {
         auto translate = zeno::vec_to_other<glm::vec3>(user_data.getLiterial<zeno::vec3f>("_translate"));
         auto rotate = zeno::vec_to_other<glm::vec4>(user_data.getLiterial<zeno::vec4f>("_rotate"));
         auto scale = zeno::vec_to_other<glm::vec3>(user_data.getLiterial<zeno::vec3f>("_scale"));
+        if (scene->lightMan->has(obj_name)) {
+            auto light = scene->lightMan->items[obj_name];
+            zeno::log_info("{} {}", light->data.translation, zeno::other_to_vec<3>(m_trans));
+            light->data.translation += zeno::other_to_vec<3>(m_trans - m_last_trans);
+
+            vec3f bmin, bmax;
+            std::tie(bmin, bmax) = primBoundingBox(obj);
+            zeno::log_info("{} {}", bmin, bmax);
+            new_objects_center += (zeno::vec_to_other<glm::vec3>(bmin) + zeno::vec_to_other<glm::vec3>(bmax)) / 2.0f;
+            continue;
+        }
 
         // inv last transform
         auto pre_translate_matrix = glm::translate(translate + m_last_trans);
