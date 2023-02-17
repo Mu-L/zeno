@@ -617,6 +617,7 @@ void FakeTransformer::doTransform() {
             auto light = scene->lightMan->items[obj_name];
             zeno::log_info("{} {}", light->data.translation, zeno::other_to_vec<3>(m_trans));
             light->data.translation += zeno::other_to_vec<3>(m_trans - m_last_trans);
+            light->proxy_prim(obj);
 
             vec3f bmin, bmax;
             std::tie(bmin, bmax) = primBoundingBox(obj);
