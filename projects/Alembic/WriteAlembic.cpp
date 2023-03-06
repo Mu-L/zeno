@@ -25,7 +25,7 @@ struct WriteAlembic : INode {
     OArchive archive;
     OPolyMesh meshyObj;
     virtual void apply() override {
-        bool flipFrontBack = get_param<int>("flipFrontBack");
+        const bool flipFrontBack = true;
         int frameid;
         if (has_input("frameid")) {
             frameid = get_param<int>("frameid");
@@ -180,7 +180,6 @@ ZENDEFNODE(WriteAlembic, {
         {"writepath", "path", ""},
         {"int", "frame_start", "0"},
         {"int", "frame_end", "100"},
-        {"bool", "flipFrontBack", "1"},
     },
     {"alembic"},
 });
